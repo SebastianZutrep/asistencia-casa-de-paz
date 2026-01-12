@@ -1,0 +1,106 @@
+{% extends "asistencia/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="mt-4">
+
+    <!-- TÍTULO -->
+    <div class="mb-4 text-center">
+        <h2 class="fw-bold title-text">Panel de Control</h2>
+        <p class="text-muted">
+            Bienvenido, {{ request.user.username }}
+        </p>
+    </div>
+
+    <!-- CARDS -->
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Integrantes activos</h6>
+                    <h2 class="fw-bold text-primary">
+                        {{ total_integrantes }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Reuniones registradas</h6>
+                    <h2 class="fw-bold text-success">
+                        {{ total_reuniones }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Asistencia última reunión</h6>
+                    <h2 class="fw-bold text-info">
+                        {{ asistencia_ultima }}
+                    </h2>
+                    {% if ultima_reunion %}
+                    <small class="text-muted">
+                        {{ ultima_reunion.fecha }}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Integrantes en alerta (3 o más reuniones sin asistir)</h6>
+                    {% if integrantes_alerta %}
+                    <ul class="list-unstyled mb-0">
+                        {% for i in integrantes_alerta %}
+                        <li class="text-danger fw-bold">{{ i.nombre }} {{ i.apellido }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <h2 class="fw-bold text-success">0</h2>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if cumple_hoy %}
+        <div class="alert alert-warning mt-4 shadow-sm">
+            <h5 class="mb-2">🎂 Cumpleaños hoy:</h5>
+
+            <ul class="mb-0">
+                {% for i in cumple_hoy %}
+                <li>{{ i.nombre }} {{ i.apellido }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <!-- GRÁFICA -->
+    <div class="chart-container">
+        <canvas id="asistenciaChart" data-labels='{{ chart_labels|safe }}' data-data='{{ chart_data|safe }}'>
+        </canvas>
+    </div>
+
+
+</div>
+
+<!-- SCRIPTS (SIEMPRE AL FINAL) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'asistencia/js/dashboard.js' %}"></script>
+
+{% endblock %}

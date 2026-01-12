@@ -1,0 +1,27 @@
+{% extends 'asistencia/base.html' %}
+{% block content %}
+<h2 class="title-text">Reunión del {{ object.fecha }}</h2>
+<p class="text-dark"><b>Tema:</b> {{ object.tema }}</p>
+<p class="text-dark"><b>Maestro:</b> {{ object.maestro }}</p>
+<p class="text-dark"><b>Tipo:</b>
+    {% if object.tipo == 'J' %}Jóvenes
+    {% elif object.tipo == 'N' %}Niños y preadolescentes
+    {% endif %}
+</p>
+
+<div class="mt-3">
+    <a href="{% url 'marcar_asistencia' reunion_id=object.id %}" class="btn btn-info">Marcar Asistencia</a>
+
+    <a href="{% url 'ver_asistencia' reunion.id %}" class="btn btn-primary">Ver Asistencia</a>
+
+</div>
+
+<br>
+<br>
+
+<div>
+    <a href="{% url 'reunion_list' %}" class="btn btn-outline-secondary">
+        ⬅ Volver
+    </a>
+</div>
+{% endblock %}

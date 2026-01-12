@@ -1,0 +1,51 @@
+{% extends 'asistencia/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0 title-text">Marcar asistencia - {{ reunion.tema }} ({{ reunion.fecha }})</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ formset.management_form }}
+
+                <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Integrante</th>
+                            <th class="text-center">Asistió</th>
+                            <th>Comentario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in formset %}
+                        <tr>
+                            <td>
+                                {{ form.instance.integrante.nombre }}
+                                {{ form.integrante }} 
+                                {{ form.id }} 
+                            </td>
+                            <td class="text-center">
+                                {{ form.presente }}
+                            </td>
+                            <td>
+                                {{ form.comentario }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <a href="{% url 'reunion_detail' pk=reunion.id %}" class="btn btn-secondary">Atrás</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

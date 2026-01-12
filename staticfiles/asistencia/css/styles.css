@@ -1,0 +1,315 @@
+body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.navbar-brand {
+    letter-spacing: 0.5px;
+}
+
+main {
+    min-height: 70vh;
+}
+
+footer {
+    border-top: 1px solid #e5e5e5;
+}
+
+/* Contenedor */
+.form-container {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card */
+.form-card {
+    background: #ffffff;
+    padding: 2.8rem;
+    width: 100%;
+    max-width: 520px;
+    border-radius: 18px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+}
+
+/* Título */
+.form-title {
+    text-align: center;
+    margin-bottom: 2.2rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+/* Grupo */
+.field-group {
+    position: relative;
+    margin-bottom: 1.8rem;
+}
+
+/* Inputs */
+.field-group input,
+.field-group select {
+    width: 100%;
+    padding: 14px 12px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1.5px solid #d1d5db;
+    background: #f9fafb;
+    transition: all 0.25s ease;
+}
+
+/* Focus */
+.field-group input:focus,
+.field-group select:focus {
+    border-color: #198754;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.15);
+    outline: none;
+}
+
+/* Label flotante */
+.field-group label {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    background: #ffffff;
+    padding: 0 6px;
+    color: #6b7280;
+    font-size: 0.9rem;
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+/* Cuando hay texto o focus */
+.field-group input:focus + label,
+.field-group input:not(:placeholder-shown) + label,
+.field-group select:focus + label {
+    top: -8px;
+    font-size: 0.75rem;
+    color: #198754;
+}
+
+/* Error */
+.error-text {
+    color: #dc2626;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Botones */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2.5rem;
+}
+
+.form-actions .btn {
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    max-height: 300px;
+}
+
+/* ===== VARIABLES ===== */
+:root {
+    --bg: #f4f6f9;
+    --card-bg: #ffffff;
+    --text: #212529;
+    --muted: #6c757d;
+    --primary: #0d6efd;
+    --input-bg: #ffffff;
+    --border: #dee2e6;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #0f172a;
+        --card-bg: #1e293b;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --primary: #3b82f6;
+        --input-bg: #0f172a;
+        --border: #334155;
+    }
+}
+
+/* ===== BASE ===== */
+body {
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* Contenedor general */
+
+.login-wrapper {
+    min-height: 100vh;
+    width: 50px;
+}
+
+/* Card del login */
+
+/* FORZAR ancho correcto del login (override a w-100 de Bootstrap) */
+.login-card {
+    width: 100% !important;
+    max-width: 320px !important;  /* ancho real del login */
+    margin: 0 auto;
+}
+
+/* Logo */
+.login-logo {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+}
+
+/* Títulos */
+.login-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.login-subtitle {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+/* ===== INPUTS ===== */
+.login-input-group .form-control {
+    border-left: none;
+}
+
+.login-input-group .input-group-text {
+    background-color: #f8f9fa;
+    border-right: none;
+}
+
+/* Botón mostrar contraseña */
+.password-toggle {
+    border-left: none;
+}
+
+/* Botón login */
+.login-btn {
+    padding: 10px;
+    font-weight: 500;
+}
+
+/* Alert */
+.login-alert {
+    font-size: 0.9rem;
+}
+
+/* 🌙 Dark mode (si lo tienes activo en base.html) */
+body.dark-mode .login-card {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode .login-input-group .input-group-text {
+    background-color: #2a2a2a;
+    color: #ffffff;
+}
+
+body.dark-mode .login-input {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border-color: #444;
+}
+/* ===== ANIMATION ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.password-toggle {
+    border: 1px solid var(--border);
+    background: var(--input-bg);
+    color: var(--muted);
+}
+
+.password-toggle:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+/* ===============================
+   FIX TOTAL LOGIN (FORZADO)
+================================ */
+
+/* Quitar el container SOLO cuando es login */
+body:not(.authenticated) main.container {
+    max-width: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Centrar el login correctamente */
+body:not(.authenticated) .login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Ancho REAL del login */
+body:not(.authenticated) .login-card {
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 0 auto;
+}
+/* ===============================
+   LOGIN: quitar scroll innecesario
+================================ */
+body:not(.authenticated) {
+    min-height: 100vh;
+}
+
+/* Evitar márgenes extra */
+body:not(.authenticated) main {
+    margin: 0 !important;
+    padding: 1rem !important;
+}
+
+/* Ocultar footer en login */
+body:not(.authenticated) footer {
+    display: none;
+}
+
+/* Para autenticados, agregar padding al main */
+body.authenticated main {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+}
+
+.profile-photo {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 4px solid #0d6efd;
+    transition: transform 0.2s ease;
+}
+
+.profile-photo:hover {
+    transform: scale(1.05);
+}
+
+
+
+

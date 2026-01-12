@@ -1,0 +1,10 @@
+{% extends 'asistencia/base.html' %}
+{% block content %}
+<h2 class="title-text">Eliminar Integrante</h2>
+<p>¿Estás seguro de que quieres eliminar a <b>{{ object.nombre }} {{ object.apellido }}</b>?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    <a href="{% url 'integrante_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

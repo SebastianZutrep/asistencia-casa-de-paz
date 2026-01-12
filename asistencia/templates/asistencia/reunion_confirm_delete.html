@@ -1,0 +1,10 @@
+{% extends 'asistencia/base.html' %}
+{% block content %}
+<h2 class="title-text">Eliminar Reunión</h2>
+<p>¿Seguro que deseas eliminar la reunión: <b>{{ reunion.tema }}</b> del <b>{{ reunion.fecha }}</b>?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+</form>
+<a href="{% url 'reunion_list' %}" class="btn btn-secondary">Cancelar</a>
+{% endblock %}

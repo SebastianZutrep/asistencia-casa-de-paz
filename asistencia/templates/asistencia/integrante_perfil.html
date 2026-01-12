@@ -1,0 +1,297 @@
+{% extends 'asistencia/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container" style="max-width: 900px;">
+
+    <a href="{% url 'integrante_list' %}" class="btn btn-outline-secondary mb-3">
+        ⬅ Volver a integrantes
+    </a>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+
+            <div class="row align-items-center">
+
+                <!-- FOTO -->
+                <div class="col-md-3 text-center">
+
+                    {% if integrante.foto %}
+                    <img src="{{ integrante.foto.url }}" class="rounded-circle mb-2 profile-photo" id="profilePhoto"
+                        alt="Foto de {{ integrante.nombre }}">
+                    {% else %}
+                    <img src="{% static 'asistencia/img/user_placeholder.png' %}"
+                        class="rounded-circle mb-2 profile-photo" id="profilePhoto" alt="Foto de perfil">
+                    {% endif %}
+
+                    <small class="text-muted d-block">
+                        Click para ver o cambiar
+                    </small>
+                </div>
+
+                <!-- INFO PRINCIPAL -->
+                <div class="col-md-9">
+
+                    <h3 class="fw-bold mb-1">
+                        {{ integrante.nombre }} {{ integrante.apellido }}
+
+                        {% if integrante.es_cumple %}
+                        <span title="¡Hoy es su cumpleaños!">🎂</span>
+                        {% endif %}
+
+                        {% if integrante.activo %}
+                        <span class="badge bg-success ms-2">Activo</span>
+                        {% else %}
+                        <span class="badge bg-danger ms-2">Inactivo</span>
+                        {% endif %}
+                    </h3>
+
+
+                    <p class="text-muted mb-2">
+                        {{ integrante.tipo|title }}
+                        {% if integrante.sexo %}
+                        · {% if integrante.sexo == 'M' %}Masculino{% else %}Femenino{% endif %}
+                        {% endif %}
+                    </p>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-2">
+                            <strong>Edad:</strong>
+                            {% if integrante.edad %}
+                            {{ integrante.edad }} años
+                            {% else %}
+                            —
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-2">
+                            <strong>Teléfono:</strong>
+                            {{ integrante.telefono|default:"—" }}
+                        </div>
+
+                        <div class="col-md-12 mb-2">
+                            <strong>Dirección:</strong>
+                            {{ integrante.direccion|default:"—" }}
+                        </div>
+
+                    </div>
+                    
+                    <br>
+
+                    <h3>Resumen de Asistencias</h3>
+
+                    <ul>
+                        <li><strong>Total histórico:</strong> {{ total_asistencias }}</li>
+                        <li><strong>Este año:</strong> {{ total_asistencias_año }}</li>
+                        <li><strong>Este mes:</strong> {{ total_asistencias_mes }}</li>
+                    </ul>
+
+                </div>
+            </div>
+
+            <br>
+
+            <form method="post" action="{% url 'integrante_toggle_activo' integrante.pk %}">
+                {% csrf_token %}
+
+                {% if integrante.activo %}
+                <button class="btn btn-outline-danger btn-sm">
+                    Desactivar integrante
+                </button>
+                {% else %}
+                <button class="btn btn-outline-success btn-sm">
+                    Activar integrante
+                </button>
+                {% endif %}
+            </form>
+
+            <hr class="my-4">
+
+            <!-- DESCRIPCIÓN -->
+            <h5 class="fw-semibold mb-2 d-flex justify-content-between align-items-center">
+                Descripción
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                    data-bs-target="#editarDescripcionModal">
+                    ✏ Editar
+                </button>
+            </h5>
+
+            <p class="text-muted">
+                {% if integrante.descripcion %}
+                {{ integrante.descripcion }}
+                {% else %}
+                No hay descripción registrada.
+                {% endif %}
+            </p>
+
+
+            <hr class="my-4">
+
+            <!-- ÚLTIMA ASISTENCIA -->
+            <h5 class="fw-semibold mb-2">Última asistencia</h5>
+
+            {% if ultima_asistencia %}
+            <p class="mb-0">
+                Asistió el
+                <strong>
+                    {{ ultima_asistencia.reunion.fecha|date:"d F Y" }}
+                </strong>
+            </p>
+            {% else %}
+            <p class="text-muted mb-0">
+                No hay registros de asistencia.
+            </p>
+            {% endif %}
+
+            <hr class="my-4">
+
+            <h5 class="fw-semibold mb-3">Historial de asistencia</h5>
+
+            {% if historial_asistencias %}
+            <ul class="list-group list-group-flush">
+
+                {% for a in historial_asistencias %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        📅 <a href="{% url 'reunion_detail' a.reunion.id %}">{{ a.reunion.fecha|date:"d F Y" }} - {{ a.reunion.tema }}</a>
+                    </span>
+
+                    {% if a.comentario %}
+                    <span class="text-muted small">
+                        {{ a.comentario }}
+                    </span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+
+            </ul>
+            {% else %}
+            <p class="text-muted">
+                No hay asistencias registradas.
+            </p>
+            {% endif %}
+
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ================= MODALES ================= -->
+
+<!-- MODAL OPCIONES FOTO -->
+<div class="modal fade" id="opcionesFotoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Foto de perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body d-grid gap-2">
+
+                {% if integrante.foto %}
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#verFotoModal"
+                    data-bs-dismiss="modal">
+                    👁 Ver foto
+                </button>
+                {% endif %}
+
+                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#subirFotoModal"
+                    data-bs-dismiss="modal">
+                    ⬆ Cambiar foto
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL VER FOTO -->
+<div class="modal fade" id="verFotoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark">
+            <div class="modal-body text-center">
+                {% if integrante.foto %}
+                <img src="{{ integrante.foto.url }}" class="img-fluid rounded">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CAMBIAR FOTO -->
+<div class="modal fade" id="subirFotoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <form method="post" enctype="multipart/form-data"
+                action="{% url 'integrante_cambiar_foto' integrante.pk %}">
+                {% csrf_token %}
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Cambiar foto de perfil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="file" name="foto" class="form-control" accept="image/*" required>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Guardar
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR DESCRIPCIÓN -->
+<div class="modal fade" id="editarDescripcionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <form method="post" action="{% url 'integrante_editar_descripcion' integrante.pk %}">
+                {% csrf_token %}
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar descripción</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <textarea name="descripcion" class="form-control" rows="5"
+                        placeholder="Escribe una breve descripción...">{{ integrante.descripcion }}</textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Guardar
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- JS DEL PERFIL -->
+<script src="{% static 'asistencia/js/integrante_perfil.js' %}"></script>
+
+{% endblock %}

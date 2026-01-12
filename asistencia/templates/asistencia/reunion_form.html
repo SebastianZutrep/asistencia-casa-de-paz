@@ -1,0 +1,64 @@
+{% extends 'asistencia/base.html' %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 650px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+
+            <h4 class="fw-bold mb-4 text-center title-text">
+                {{ form.instance.pk|yesno:"Editar Reunión,Nueva Reunión" }}
+            </h4>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        {{ form.fecha.label }}
+                    </label>
+                    {{ form.fecha }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        {{ form.tema.label }}
+                    </label>
+                    {{ form.tema }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        {{ form.maestro.label }}
+                    </label>
+                    {{ form.maestro }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        {{ form.tipo.label }}
+                    </label>
+                    {{ form.tipo }}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'reunion_list' %}" class="btn btn-outline-secondary">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-success px-4">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+
+            {% if form.instance.pk %}
+            <div class="text-center mt-4">
+                <a href="{% url 'ver_asistencia' form.instance.pk %}" class="btn btn-outline-info">
+                    Editar asistencia
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

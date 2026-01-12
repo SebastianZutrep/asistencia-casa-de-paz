@@ -1,0 +1,198 @@
+{% extends 'asistencia/base.html' %}
+{% load static %}
+{% block content %}
+
+<h2 class="title-text">Integrantes</h2>
+<br>
+<a class="btn btn-primary mb-2" href="{% url 'integrante_create' %}">Añadir nuevo integrante</a>
+
+<div class="mt-4">
+
+  <!-- BUSCADOR + FILTROS -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <form method="get" class="row g-2 align-items-end">
+
+        <div class="col-md-4">
+          <label class="form-label">Buscar</label>
+          <input type="text" name="q" class="form-control" placeholder="Nombre o apellido" value="{{ request.GET.q }}">
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Rol</label>
+          <select name="rol" class="form-select">
+            <option value="">Todos</option>
+            <option value="maestro" {% if request.GET.rol == 'maestro' %}selected{% endif %}>Maestro</option>
+            <option value="lider" {% if request.GET.rol == 'lider' %}selected{% endif %}>Líder</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Tipo</label>
+          <select name="tipo" class="form-select">
+            <option value="">Todos</option>
+            <option value="niño" {% if request.GET.tipo == 'niño' %}selected{% endif %}>niño</option>
+            <option value="servidor" {% if request.GET.tipo == 'servidor' %}selected{% endif %}>servidor</option>
+            <option value="joven" {% if request.GET.tipo == 'joven' %}selected{% endif %}>joven</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Estado</label>
+          <select name="activo" class="form-select">
+            <option value="">Todos</option>
+            <option value="1" {% if request.GET.activo == '1' %}selected{% endif %}>Activo</option>
+            <option value="0" {% if request.GET.activo == '0' %}selected{% endif %}>Inactivo</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Sexo</label>
+          <select name="sexo" class="form-select">
+            <option value="">Todos</option>
+            <option value="M" {% if request.GET.sexo == 'M' %}selected{% endif %}>Masculino</option>
+            <option value="F" {% if request.GET.sexo == 'F' %}selected{% endif %}>Femenino</option>
+          </select>
+        </div>
+
+        <div class="col-md-2 d-grid gap-2">
+          <button type="submit" class="btn btn-primary">Buscar</button>
+          <a href="{% url 'integrante_list' %}" class="btn btn-outline-secondary">Limpiar</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  {% if request.GET %}
+  <p class="text-muted mt-2">
+    Se encontraron <strong>{{ total_resultados }}</strong> integrante{{ total_resultados|pluralize }}
+  </p>
+  {% endif %}
+
+  <!-- TABLA -->
+  <div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Teléfono</th>
+        <th>Edad</th>
+        <th>Sexo</th>
+        <th>Dirección</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for i in integrantes %}
+      <tr>
+        <td>
+          <a href="{% url 'integrante_perfil' i.pk %}"
+            class="d-flex align-items-center gap-2 text-decoration-none fw-semibold">
+
+            {% if i.foto %}
+            <img src="{{ i.foto.url }}" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+            {% else %}
+            <img src="{% static 'asistencia/img/user_placeholder.png' %}" class="rounded-circle"
+              style="width: 32px; height: 32px; object-fit: cover;">
+            {% endif %}
+
+            <span class="{% if i.alerta_inasistencia %}text-danger{% endif %}">
+              {{ i.nombre }} {{ i.apellido }}
+            </span>
+
+            {% if i.es_cumple %}
+            <span title="¡Hoy es su cumpleaños!">🎂</span>
+            {% endif %}
+
+          </a>
+        </td>
+
+        <td>{{ i.tipo }}</td>
+        <td>{{ i.telefono }}</td>
+
+        <td>
+          {% if i.edad %}
+          {{ i.edad }} años
+          {% else %}
+          —
+          {% endif %}
+        </td>
+
+        <td>
+          {% if i.sexo == 'M' %}
+          Masculino
+          {% elif i.sexo == 'F' %}
+          Femenino
+          {% else %}
+          —
+          {% endif %}
+        </td>
+
+        <td>
+          {% if i.direccion %}
+          {{ i.direccion }}
+          {% else %}
+          <span class="text-muted">—</span>
+          {% endif %}
+        </td>
+
+        <td>
+          <a class="btn btn-sm btn-secondary" href="{% url 'integrante_update' i.pk %}">Editar</a>
+          <a class="btn btn-sm btn-danger" href="{% url 'integrante_delete' i.pk %}">Borrar</a>
+        </td>
+      </tr>
+
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center text-muted py-4">
+          {% if request.GET.q or request.GET.rol or request.GET.tipo or request.GET.activo %}
+          No se encontraron integrantes con los filtros aplicados.
+          {% else %}
+          No hay integrantes registrados.
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+  </div>
+
+  <!-- PAGINACIÓN -->
+  {% if is_paginated %}
+  <nav class="mt-4">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">Anterior</a>
+      </li>
+      {% endif %}
+
+      <li class="page-item active">
+        <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+      </li>
+
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">Siguiente</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <a href="{% url 'integrante_export_excel' %}?{{ request.GET.urlencode }}" class="btn btn-success">
+      Exportar a Excel
+    </a>
+
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+      ⬅ Volver al panel
+    </a>
+  </div>
+
+</div>
+{% endblock %}

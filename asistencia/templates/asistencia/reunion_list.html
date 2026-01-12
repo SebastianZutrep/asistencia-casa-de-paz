@@ -1,0 +1,97 @@
+{% extends 'asistencia/base.html' %}
+{% block title %}Reuniones{% endblock %}
+
+{% block content %}
+<div class="container">
+<h2 class="title-text">Lista de Reuniones</h2>
+<br>
+<a href="{% url 'reunion_create' %}" class="btn btn-success mb-2">+ Nueva Reunión</a>
+
+<div class="mt-4">
+
+  <!-- BUSCADOR + FILTROS -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <form method="get" class="row g-2 align-items-end">
+
+        <div class="col-md-4">
+          <label class="form-label">Buscar</label>
+          <input type="text" name="q" class="form-control" placeholder="Tema de la reunión" value="{{ request.GET.q }}">
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Tipo</label>
+          <select name="tipo" class="form-select">
+            <option value="">Todos</option>
+            <option value="J" {% if request.GET.tipo == 'J' %}selected{% endif %}>Jóvenes</option>
+            <option value="N" {% if request.GET.tipo == 'N' %}selected{% endif %}>Niños y preadolescentes</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Maestro</label>
+          <select name="maestro" class="form-select">
+            <option value="">Todos</option>
+            {% for m in maestros %}
+            <option value="{{ m.id }}" {% if request.GET.maestro == m.id|stringformat:'s' %}selected{% endif %}>{{ m.nombre }} {{ m.apellido }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-3 d-grid gap-2">
+          <button type="submit" class="btn btn-primary">Buscar</button>
+          <a href="{% url 'reunion_list' %}" class="btn btn-outline-secondary">Limpiar</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  {% if request.GET %}
+  <p class="text-muted mt-2">
+    Se encontraron <strong>{{ total_resultados }}</strong> reunión{{ total_resultados|pluralize }}
+  </p>
+  {% endif %}
+
+<br>
+<br>
+
+<div class="table-responsive">
+<table class="table table-striped">
+    <tr>
+        <th>Fecha</th>
+        <th>Tema</th>
+        <th>Maestro</th>
+        <th>Tipo</th> 
+        <th>Acciones</th>
+    </tr>
+    {% for r in reuniones %}
+    <tr>
+        <td>{{ r.fecha }}</td>
+        <td><a href="{% url 'reunion_detail' r.id %}">{{ r.tema }}</a></td>
+        <td>{{ r.maestro }}</td>
+        <td>
+            {% if r.tipo == 'J' %} Jóvenes
+            {% elif r.tipo == 'N' %} Niños y preadolescentes
+            {% endif %}
+        </td>
+        <td>
+            <a href="{% url 'reunion_update' r.id %}" class="btn btn-sm btn-warning">Editar</a>
+            <a href="{% url 'reunion_delete' r.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+            <a href="{% url 'reunion_detail' r.id %}" class="btn btn-sm btn-info">Asistencia</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No hay reuniones.</td></tr>
+    {% endfor %}
+</table>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+        ⬅ Volver al panel
+    </a>
+</div>
+</div>
+{% endblock %}
+
