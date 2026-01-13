@@ -1,5 +1,7 @@
 from django.db import models
 from datetime import date
+from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 
 # Create your models here.
@@ -57,11 +59,12 @@ class Integrante(models.Model):
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
     
-    foto = models.ImageField(
-        upload_to='integrantes/',
+
+    foto = CloudinaryField(
+        'image',
         blank=True,
         null=True,
-        default='integrantes/user_default.png'
+        default='user_default'
     )
     
 
