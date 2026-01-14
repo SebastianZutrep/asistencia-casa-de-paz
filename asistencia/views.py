@@ -496,9 +496,18 @@ def integrante_cambiar_foto(request, pk):
     logger.info(f"Intentando cambiar foto para integrante {pk}")
     logger.info(f"Cloudinary config: cloud_name={os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT_SET')}")
 
+    # Log request details
+    logger.info(f"Request method: {request.method}")
+    logger.info(f"Request FILES: {list(request.FILES.keys())}")
+    logger.info(f"Request POST: {list(request.POST.keys())}")
+
     if 'foto' in request.FILES:
         foto_file = request.FILES['foto']
         logger.info(f"Archivo recibido: {foto_file.name}, tamaño: {foto_file.size}")
+
+        # Verificar configuración de Cloudinary
+        import cloudinary
+        logger.info(f"Cloudinary config check: {cloudinary.config().cloud_name}")
 
         try:
             integrante.foto = foto_file
@@ -507,6 +516,9 @@ def integrante_cambiar_foto(request, pk):
             messages.success(request, 'Foto de perfil actualizada correctamente.')
         except Exception as e:
             logger.error(f"Error al guardar foto para integrante {pk}: {str(e)}")
+            logger.error(f"Error type: {type(e).__name__}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
             messages.error(request, f'Error al subir la foto: {str(e)}')
     else:
         logger.warning(f"No se recibió archivo de foto para integrante {pk}")
