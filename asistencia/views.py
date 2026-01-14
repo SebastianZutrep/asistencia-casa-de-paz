@@ -491,38 +491,40 @@ def integrante_perfil(request, pk):
 @require_POST
 def integrante_cambiar_foto(request, pk):
     logger = logging.getLogger(__name__)
-    integrante = get_object_or_404(Integrante, pk=pk)
 
-    logger.info(f"Intentando cambiar foto para integrante {pk}")
-    logger.info(f"Cloudinary config: cloud_name={os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT_SET')}")
+    try:
+        integrante = get_object_or_404(Integrante, pk=pk)
 
-    # Log request details
-    logger.info(f"Request method: {request.method}")
-    logger.info(f"Request FILES: {list(request.FILES.keys())}")
-    logger.info(f"Request POST: {list(request.POST.keys())}")
+        logger.info(f"Intentando cambiar foto para integrante {pk}")
+        logger.info(f"Cloudinary config: cloud_name={os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT_SET')}")
 
-    if 'foto' in request.FILES:
-        foto_file = request.FILES['foto']
-        logger.info(f"Archivo recibido: {foto_file.name}, tamaño: {foto_file.size}")
+        # Log request details
+        logger.info(f"Request method: {request.method}")
+        logger.info(f"Request FILES keys: {list(request.FILES.keys()) if request.FILES else 'FILES is None'}")
+        logger.info(f"Request POST keys: {list(request.POST.keys())}")
 
-        # Verificar configuración de Cloudinary
-        import cloudinary
-        logger.info(f"Cloudinary config check: {cloudinary.config().cloud_name}")
+        if 'foto' in request.FILES:
+            foto_file = request.FILES['foto']
+            logger.info(f"Archivo recibido: {foto_file.name}, tamaño: {foto_file.size}")
 
-        try:
+            # Verificar configuración de Cloudinary
+            import cloudinary
+            logger.info(f"Cloudinary config check: {cloudinary.config().cloud_name}")
+
             integrante.foto = foto_file
             integrante.save()
             logger.info(f"Foto guardada exitosamente para integrante {pk}, URL: {integrante.foto.url if integrante.foto else 'None'}")
             messages.success(request, 'Foto de perfil actualizada correctamente.')
-        except Exception as e:
-            logger.error(f"Error al guardar foto para integrante {pk}: {str(e)}")
-            logger.error(f"Error type: {type(e).__name__}")
-            import traceback
-            logger.error(f"Traceback: {traceback.format_exc()}")
-            messages.error(request, f'Error al subir la foto: {str(e)}')
-    else:
-        logger.warning(f"No se recibió archivo de foto para integrante {pk}")
-        messages.error(request, 'No se seleccionó ninguna foto.')
+        else:
+            logger.warning(f"No se recibió archivo de foto para integrante {pk}")
+            messages.error(request, 'No se seleccionó ninguna foto.')
+
+    except Exception as e:
+        logger.error(f"Error inesperado en integrante_cambiar_foto: {str(e)}")
+        logger.error(f"Error type: {type(e).__name__}")
+        import traceback
+        logger.error(f"Traceback completo: {traceback.format_exc()}")
+        messages.error(request, f'Error interno del servidor: {str(e)}')
 
     return redirect('integrante_perfil', pk=pk)
 
