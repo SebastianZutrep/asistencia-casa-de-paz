@@ -64,7 +64,6 @@ class Integrante(models.Model):
         'image',
         blank=True,
         null=True,
-        default='user_default'
     )
     
 

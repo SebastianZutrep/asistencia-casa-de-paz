@@ -487,12 +487,19 @@ def integrante_perfil(request, pk):
     return render(request, 'asistencia/integrante_perfil.html', context)
 
 @require_POST
+@require_POST
 def integrante_cambiar_foto(request, pk):
     integrante = get_object_or_404(Integrante, pk=pk)
 
     if 'foto' in request.FILES:
-        integrante.foto = request.FILES['foto']
-        integrante.save()
+        try:
+            integrante.foto = request.FILES['foto']
+            integrante.save()
+            messages.success(request, 'Foto de perfil actualizada correctamente.')
+        except Exception as e:
+            messages.error(request, f'Error al subir la foto: {str(e)}')
+    else:
+        messages.error(request, 'No se seleccionó ninguna foto.')
 
     return redirect('integrante_perfil', pk=pk)
 
