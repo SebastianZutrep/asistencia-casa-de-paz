@@ -1,6 +1,7 @@
 from datetime import timedelta
 import json
 import openpyxl
+import logging
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -489,16 +490,26 @@ def integrante_perfil(request, pk):
 @require_POST
 @require_POST
 def integrante_cambiar_foto(request, pk):
+    logger = logging.getLogger(__name__)
     integrante = get_object_or_404(Integrante, pk=pk)
 
+    logger.info(f"Intentando cambiar foto para integrante {pk}")
+    logger.info(f"Cloudinary config: cloud_name={os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT_SET')}")
+
     if 'foto' in request.FILES:
+        foto_file = request.FILES['foto']
+        logger.info(f"Archivo recibido: {foto_file.name}, tamaño: {foto_file.size}")
+
         try:
-            integrante.foto = request.FILES['foto']
+            integrante.foto = foto_file
             integrante.save()
+            logger.info(f"Foto guardada exitosamente para integrante {pk}, URL: {integrante.foto.url if integrante.foto else 'None'}")
             messages.success(request, 'Foto de perfil actualizada correctamente.')
         except Exception as e:
+            logger.error(f"Error al guardar foto para integrante {pk}: {str(e)}")
             messages.error(request, f'Error al subir la foto: {str(e)}')
     else:
+        logger.warning(f"No se recibió archivo de foto para integrante {pk}")
         messages.error(request, 'No se seleccionó ninguna foto.')
 
     return redirect('integrante_perfil', pk=pk)
