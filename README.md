@@ -49,6 +49,8 @@ Access http://127.0.0.1:8000 in your browser.
 
 ## Project Structure
 
+```bash
+
 Asistencia_Casa_De_Paz/
          casa_paz/
          │
@@ -60,6 +62,7 @@ Asistencia_Casa_De_Paz/
          ├── manage.py
          └── requirements.txt
 
+```
 ## 🤝 Contributing
 
 To contribute safely to this project:
